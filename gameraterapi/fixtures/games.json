@@ -1,0 +1,14 @@
+[
+    {
+        "model": "gameraterapi.game",
+        "pk": 1,
+        "fields": {
+            "description": "Blah Blah Blah, you know what it is!!",
+            "designer": 1,
+            "year_released": "1992",
+            "number_of_players": 5,
+            "time_to_play": 30,
+            "age_recommendation": 3
+        }
+    }
+]

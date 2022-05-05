@@ -1,0 +1,11 @@
+[
+    {
+        "model": "gameraterapi.review",
+        "pk": 1,
+        "fields": {
+            "review": "This game is decent I guess",
+            "player": 1,
+            "game": 1
+        }
+    }
+]

@@ -1,0 +1,9 @@
+[
+    {
+        "model": "gameraterapi.category",
+        "pk": 1,
+        "fields": {
+            "label": "MMORPG"
+        }
+    }
+]
