@@ -7,6 +7,6 @@ class Game(models.Model):
     designer = models.ForeignKey("Player", on_delete=models.CASCADE)
     year_released = models.CharField(max_length=4)
     number_of_players = models.IntegerField()
-    time_to_play = models.CharField(max_length=10)
-    age_recommendation = models.CharField(max_length=10)
+    time_to_play = models.IntegerField()
+    age_recommendation = models.IntegerField()
     categories = models.ManyToManyField("Category", related_name="categories")
