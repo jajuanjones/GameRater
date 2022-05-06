@@ -3,10 +3,8 @@ from django.http import HttpResponseServerError
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import serializers, status
-from gameraterapi.models import Category
 from gameraterapi.models import Game
 from gameraterapi.models import Player
-from rest_framework.decorators import action
 
 class GameView(ViewSet):
     """Level up game view"""
@@ -43,10 +41,10 @@ class GameView(ViewSet):
         Returns:
             Response -- JSON serialized event
         """ 
-        organizer = Player.objects.get(pk=request.data['organizer'])
+        designer = Player.objects.get(pk=request.data['designer'])
         serializer = CreateGameSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save(organizer=organizer)
+        serializer.save(designer=designer)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
     def update(self, request, pk):
