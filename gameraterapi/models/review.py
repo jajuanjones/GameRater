@@ -5,4 +5,4 @@ class Review(models.Model):
     """
     review = models.TextField()
     player = models.ForeignKey("Player", on_delete=models.CASCADE)
-    game = models.ForeignKey("Game", on_delete=models.CASCADE)
+    game = models.ForeignKey("Game", on_delete=models.CASCADE, related_name="reviews")

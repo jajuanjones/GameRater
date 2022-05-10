@@ -5,9 +5,10 @@ from rest_framework.response import Response
 from rest_framework import serializers, status
 from gameraterapi.models import Game
 from gameraterapi.models import Player
+from gameraterapi.views.review import ReviewSerializer
 
 class GameView(ViewSet):
-    """Level up game view"""
+    """Game rater game view"""
 
     def retrieve(self, request, pk):
         """Handle GET requests for single game
@@ -41,10 +42,10 @@ class GameView(ViewSet):
         Returns:
             Response -- JSON serialized event
         """ 
-        designer = Player.objects.get(pk=request.data['designer'])
+        gamer = Player.objects.get(user=request.auth.user)
         serializer = CreateGameSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save(designer=designer)
+        serializer.save(gamer=gamer)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
     def update(self, request, pk):
@@ -73,9 +74,11 @@ class GameView(ViewSet):
 class GameSerializer(serializers.ModelSerializer):
     """JSON serializer for games
     """
+    # since we have a related name on 'game' prop in review model we can reference it for our game view
+    reviews = ReviewSerializer(many=True)
     class Meta:
         model = Game
-        fields = ('id', 'description', 'designer', 'year_released', 'number_of_players', 'time_to_play', 'age_recommendation', 'categories')
+        fields = ('id', 'title', 'description', 'designer', 'gamer', 'year_released', 'number_of_players', 'time_to_play', 'age_recommendation', 'categories', 'reviews')
         depth =  1
 
 class CreateGameSerializer(serializers.ModelSerializer):
@@ -83,4 +86,4 @@ class CreateGameSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = Game
-        fields = ['id', 'description', 'designer', 'year_released', 'number_of_players', 'time_to_play', 'age_recommendation', 'categories']
+        fields = ['id', 'title', 'description', 'designer', 'year_released', 'number_of_players', 'time_to_play', 'age_recommendation', 'categories']
