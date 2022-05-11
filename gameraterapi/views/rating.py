@@ -42,12 +42,10 @@ class RatingView(ViewSet):
         Returns:
             Response -- JSON serialized event
         """ 
-        player = Player.objects.get(pk=request.data['player'])
-        game = Game.objects.get(pk=request.data['game'])
+        player = Player.objects.get(user=request.auth.user)
         serializer = CreateRatingSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save(player=player)
-        serializer.save(game=game)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
     def update(self, request, pk):
@@ -86,4 +84,4 @@ class CreateRatingSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = Rating
-        fields = ['id', 'rating', 'player', 'game']
+        fields = ['id', 'rating', 'game']
