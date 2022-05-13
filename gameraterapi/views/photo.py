@@ -46,26 +46,25 @@ class PhotoView(ViewSet):
             Response -- JSON serialized event
         """ 
         # Create a new instance of the game picture model you defined
-        # Example: game_picture = GamePicture()
-
-        format, imgstr = request.data["game_image"].split(';base64,')
+        # Example: 
+        game_picture = Photo()
+        format, imgstr = request.data["image"].split(';base64,')
         ext = format.split('/')[-1]
-        data = ContentFile(base64.b64decode(imgstr), name=f'{request.data["game_id"]}-{uuid.uuid4()}.{ext}')
+        data = ContentFile(base64.b64decode(imgstr), name=f'{request.data["game"]}-{uuid.uuid4()}.{ext}')
 
         # Give the image property of your game picture instance a value
         # For example, if you named your property `action_pic`, then
         # you would specify the following code:
         #
-        #       game_picture.action_pic = data
-
-        # Save the data to the database with the save() method
-        player = Player.objects.get(pk=request.data['player'])
+        #       
+        player = Player.objects.get(user=request.auth.user)
         game = Game.objects.get(pk=request.data['game'])
-        serializer = CreatePhotoSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save(player=player)
-        serializer.save(game=game)
-        serializer.save(image=data)
+        game_picture.image = data
+        game_picture.player = player
+        game_picture.game = game
+        # Save the data to the database with the save() method
+        game_picture.save()
+        serializer = PhotoSerializer(game_picture)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
     def update(self, request, pk):
@@ -96,7 +95,7 @@ class PhotoSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = Photo
-        fields = ('id', 'game', 'player')
+        fields = ('id', 'game', 'player', 'image')
         depth =  1
 
 class CreatePhotoSerializer(serializers.ModelSerializer):
@@ -104,4 +103,4 @@ class CreatePhotoSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = Photo
-        fields = ['id', 'game', 'player', 'image']
+        fields = ['id', 'game', 'image']

@@ -6,6 +6,7 @@ from rest_framework import serializers, status
 from gameraterapi.models import Game
 from gameraterapi.models import Player
 from gameraterapi.views.review import ReviewSerializer
+from django.db.models import Q
 
 class GameView(ViewSet):
     """Game rater game view"""
@@ -29,10 +30,32 @@ class GameView(ViewSet):
         Returns:
             Response -- JSON serialized list of games
         """
+        # create a query parameter to for orderby
+        order_by = self.request.query_params.get('orderby', None)
+        # create a query param to search
+        search_text = self.request.query_params.get('q', None)
         games = Game.objects.all()
+        # whenever our resources includes 'orderby' query param
+        if order_by is not None:
+            # use the order by function to sort the games
+            games = Game.objects.all().order_by(f'{order_by}')
+        else:
+            # other wise return all the games
+            # we run this second to make sure we can sort the games on page load
+            games = Game.objects.all()
+        # create a query param to check for a designer
         designer = request.query_params.get('designer', None)
+        # this conditional will filter our games by designer names
         if designer is not None:
             games = games.filter(designer_id=designer)
+        # whenever our resources include 'search_text' query param
+        if search_text is not None:
+            # filter the game titles, descripts, and/or designers that contain our text from param
+            games = Game.objects.filter(
+                Q(title__contains=search_text) |
+                Q(description__contains=search_text) |
+                Q(designer__contains=search_text)
+            )
         serializer = GameSerializer(games, many=True)
         return Response(serializer.data)
     
@@ -80,7 +103,7 @@ class GameSerializer(serializers.ModelSerializer):
         model = Game
         fields = ('id', 'title', 'description', 'designer', 'gamer', 'year_released', 
                   'number_of_players', 'time_to_play', 'age_recommendation', 'categories', 
-                  'reviews', 'average_rating')
+                  'reviews', 'average_rating', 'images')
         depth =  1
 
 class CreateGameSerializer(serializers.ModelSerializer):
