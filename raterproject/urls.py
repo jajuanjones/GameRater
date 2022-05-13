@@ -23,6 +23,8 @@ from gameraterapi.views import PhotoView
 from gameraterapi.views import PlayerView
 from gameraterapi.views import RatingView
 from gameraterapi.views import ReviewView
+from django.conf.urls.static import static
+import raterproject.settings as settings
 from gameraterapi.views.auth import login_user, register_user
 
 router = routers.DefaultRouter(trailing_slash=False)
@@ -38,4 +40,4 @@ urlpatterns = [
     path('register', register_user),
     path('admin/', admin.site.urls),
     path('', include(router.urls )),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
